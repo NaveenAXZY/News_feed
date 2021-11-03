@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -61,7 +63,12 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
 
           posts = await _repository.fetchNewsApiModel(params, sources);
 
-          print('@@@@@@INSIDE${posts.articles!.length}');
+          print('@@@@@@INSIDE${posts.error}');
+          if (posts.error != null) {
+            yield RecentListError(
+              error: posts.error,
+            );
+          }
 
           endAt = startAt + pageCount;
           totalPages = (posts.articles!.length / pageCount).floor();
@@ -110,6 +117,12 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
 
             posts =
                 await _repository.fetchNewsApiModel(event.params, event.source);
+
+            if (posts.error != null) {
+              yield RecentListError(
+                error: posts.error,
+              );
+            }
 
             endAt = startAt + pageCount;
             totalPages = (posts.articles!.length / pageCount).floor();
@@ -182,8 +195,8 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
             );
           }
         }
-      } catch (_) {
-        print('@@@@@@@INSIDE RecentListError');
+      } catch (error) {
+        print('@@@@@@@INSIDE RecentListError${error}');
         yield RecentListError();
       }
     }

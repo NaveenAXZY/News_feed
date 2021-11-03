@@ -19,6 +19,9 @@ class RecentListUninitialized extends RecentListState {
 }
 
 class RecentListError extends RecentListState {
+  String? error;
+  RecentListError({this.error});
+
   @override
   String toString() => 'ProductListError';
 

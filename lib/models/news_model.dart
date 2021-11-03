@@ -3,14 +3,16 @@ class NewsModel {
   int? totalResults;
   List<Articles>? articles;
   String? error;
+  String? message;
 
-  NewsModel({this.status, this.totalResults, this.articles});
+  NewsModel({this.status, this.totalResults, this.articles, this.message});
 
   NewsModel.withError(String errorValue) : error = errorValue ?? '';
 
   NewsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     totalResults = json['totalResults'];
+    message = json['message'];
     if (json['articles'] != null) {
       articles = <Articles>[];
       json['articles'].forEach((v) {
@@ -23,6 +25,7 @@ class NewsModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['totalResults'] = this.totalResults;
+    data['message'] = this.message;
     if (this.articles != null) {
       data['articles'] = this.articles!.map((v) => v.toJson()).toList();
     }

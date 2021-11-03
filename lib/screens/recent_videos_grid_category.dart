@@ -40,7 +40,7 @@ class _RecentGridCategoryScreenState extends State<RecentGridCategoryScreen> {
       body: Container(
         child: BlocProvider<RecentListBloc>(
           create: (BuildContext context) =>
-              RecentListBloc(params: "apple", sources: 'SEARCH')..add(Fetch()),
+              RecentListBloc(params: "in", sources: 'COUNTRY')..add(Fetch()),
           child: HomePage(),
         ),
       ),
@@ -266,14 +266,6 @@ class _HomePageState extends State<HomePage> {
     return 'Good Evening';
   }
 
-  Future<int> refresh() async {
-    _postBloc!.add(RefreshFetch());
-    final Future<int> future = Future<int>.delayed(Duration(seconds: 3), () {
-      return 1;
-    });
-    return await future;
-  }
-
   void _showBottomSheetForCountry(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -434,9 +426,10 @@ class _HomePageState extends State<HomePage> {
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
+                                  print('');
                                   _postBloc!.add(Query(
                                       params: countryList[index]['code'],
-                                      source: 'COUNTRY'));
+                                      source: 'LANGUAGE'));
                                   Navigator.pop(context);
                                 },
                                 child: Padding(
@@ -539,8 +532,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   IconButton(
                       onPressed: () {
-                        _postBloc!.add(Query(
-                            params: _emailController.text, source: 'SEARCH'));
+                        if (_emailController.text.isNotEmpty) {
+                          _postBloc!.add(Query(
+                              params: _emailController.text, source: 'SEARCH'));
+                        }
                       },
                       icon: Icon(
                         Icons.search_outlined,
@@ -552,113 +547,111 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         Expanded(
-          child: RefreshIndicator(
-            onRefresh: () {
-              return refresh();
-            },
             child: CustomScrollView(
-              controller: _scrollController,
-              slivers: <Widget>[
-                SliverToBoxAdapter(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(top: 15, bottom: 5),
-                        child: Text(
-                          'Recent Videos',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontFamily: 'Montserrat-Bold',
-                            fontWeight: FontWeight.bold,
-                          ),
+          controller: _scrollController,
+          slivers: <Widget>[
+            SliverToBoxAdapter(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(top: 15, bottom: 5),
+                    child: Text(
+                      'News Feed',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontFamily: 'Montserrat-Bold',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            BlocBuilder<RecentListBloc, RecentListState>(
+                bloc: _postBloc,
+                //child: BlocBuilder<ProductListBloc, ProductListState>(
+                builder: (BuildContext context, RecentListState state) {
+                  final Size size = MediaQuery.of(context).size;
+                  final double itemWidth = size.width / 2 - 8;
+                  final double itemHeight = itemWidth * (3 / 2) + 90;
+
+                  if (state is RecentListError) {
+                    if (state.error != null) {
+                      return SliverToBoxAdapter(
+                        child: Center(child: Text('${state.error}')),
+                      );
+                    }
+                    return SliverToBoxAdapter(
+                      child: Center(child: Text('failed to fetch posts')),
+                    );
+                  }
+
+                  if (state is RecentListLoaded) {
+                    if (state.posts!.isEmpty) {
+                      return const SliverToBoxAdapter(
+                        child: Center(child: Text('no posts')),
+                      );
+                    }
+
+                    if (state.loadingAdditionalResults!) {
+                      if (!loadingAdditionalResults!) {
+                        WidgetsBinding.instance!
+                            .addPostFrameCallback((_) => setState(() {
+                                  loadingAdditionalResults = true;
+                                }));
+                      }
+                    } else {
+                      if (loadingAdditionalResults!) {
+                        WidgetsBinding.instance!
+                            .addPostFrameCallback((_) => setState(() {
+                                  loadingAdditionalResults = false;
+                                }));
+                      }
+                    }
+                    return SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.4,
+                      ),
+                      delegate:
+                          SliverChildBuilderDelegate((BuildContext c, int i) {
+                        return i >= state.posts!.length
+                            ? const Text('')
+                            : RecentVideosGridCategoryblock(
+                                index: i,
+                                modelResponse: state.posts,
+                              );
+                      }, childCount: state.posts!.length),
+                    );
+                  }
+                  return SliverToBoxAdapter(
+                    child: Container(
+                      child: CircularProgressIndicator(),
+                      height: size.height,
+                    ),
+                  );
+                }),
+            loadingAdditionalResults!
+                ? SliverToBoxAdapter(
+                    child: Container(
+                    height: 50.0,
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: const SizedBox(
+                        width: 33.0,
+                        height: 33.0,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                BlocBuilder<RecentListBloc, RecentListState>(
-                    bloc: _postBloc,
-                    //child: BlocBuilder<ProductListBloc, ProductListState>(
-                    builder: (BuildContext context, RecentListState state) {
-                      final Size size = MediaQuery.of(context).size;
-                      final double itemWidth = size.width / 2 - 8;
-                      final double itemHeight = itemWidth * (3 / 2) + 90;
-
-                      if (state is RecentListError) {
-                        return const SliverToBoxAdapter(
-                          child: Text('failed to fetch posts'),
-                        );
-                      }
-
-                      if (state is RecentListLoaded) {
-                        if (state.posts!.isEmpty) {
-                          return const SliverToBoxAdapter(
-                            child: Text('no posts'),
-                          );
-                        }
-
-                        if (state.loadingAdditionalResults!) {
-                          if (!loadingAdditionalResults!) {
-                            WidgetsBinding.instance!
-                                .addPostFrameCallback((_) => setState(() {
-                                      loadingAdditionalResults = true;
-                                    }));
-                          }
-                        } else {
-                          if (loadingAdditionalResults!) {
-                            WidgetsBinding.instance!
-                                .addPostFrameCallback((_) => setState(() {
-                                      loadingAdditionalResults = false;
-                                    }));
-                          }
-                        }
-                        return SliverGrid(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 1,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 1.4,
-                          ),
-                          delegate: SliverChildBuilderDelegate(
-                              (BuildContext c, int i) {
-                            return i >= state.posts!.length
-                                ? const Text('')
-                                : RecentVideosGridCategoryblock(
-                                    index: i,
-                                    modelResponse: state.posts,
-                                  );
-                          }, childCount: state.posts!.length),
-                        );
-                      }
-                      return SliverToBoxAdapter(
-                        child: Container(
-                          child: CircularProgressIndicator(),
-                          height: size.height,
-                        ),
-                      );
-                    }),
-                loadingAdditionalResults!
-                    ? SliverToBoxAdapter(
-                        child: Container(
-                        height: 50.0,
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: const SizedBox(
-                            width: 33.0,
-                            height: 33.0,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.0,
-                            ),
-                          ),
-                        ),
-                      ))
-                    : const SliverToBoxAdapter()
-              ],
-            ),
-          ),
-        ),
+                    ),
+                  ))
+                : const SliverToBoxAdapter()
+          ],
+        )),
       ],
     );
   }

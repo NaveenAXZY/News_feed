@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sudo_task/models/news_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,11 +21,13 @@ class HomeDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              '${modelResponse![index!].urlToImage}',
+            CachedNetworkImage(
               height: 230,
               width: double.infinity,
               fit: BoxFit.cover,
+              imageUrl: "${modelResponse![index!].urlToImage}",
+              placeholder: (context, url) => new CircularProgressIndicator(),
+              errorWidget: (context, url, error) => new Icon(Icons.error),
             ),
             SizedBox(
               height: 15,
@@ -57,7 +60,7 @@ class HomeDetailScreen extends StatelessWidget {
               height: 15,
             ),
             Container(
-              height: 120,
+              height: 150,
               width: double.infinity,
               color: Colors.white,
               child: Column(
