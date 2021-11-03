@@ -1,15 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:sudo_task/models/news_model.dart';
-import 'package:sudo_task/models/recent_videos_model.dart';
 
-abstract class RecentListState extends Equatable {
-  const RecentListState();
+abstract class NewsListState extends Equatable {
+  const NewsListState();
 
   @override
   List<Object> get props => [];
 }
 
-class RecentListUninitialized extends RecentListState {
+class NewsListUninitialized extends NewsListState {
   @override
   String toString() => 'ProductListUninitialized';
 
@@ -18,9 +17,9 @@ class RecentListUninitialized extends RecentListState {
   List<Object> get props => throw UnimplementedError();
 }
 
-class RecentListError extends RecentListState {
+class NewsListError extends NewsListState {
   String? error;
-  RecentListError({this.error});
+  NewsListError({this.error});
 
   @override
   String toString() => 'ProductListError';
@@ -30,7 +29,7 @@ class RecentListError extends RecentListState {
   List<Object> get props => throw UnimplementedError();
 }
 
-class RecentListLoaded extends RecentListState {
+class NewsListLoaded extends NewsListState {
   final List<Articles>? posts;
   final bool? hasReachedMax;
   final bool? loadingAdditionalResults;
@@ -42,7 +41,7 @@ class RecentListLoaded extends RecentListState {
   final String? params;
   final String? sources;
 
-  RecentListLoaded(
+  NewsListLoaded(
       {this.posts,
       this.hasReachedMax,
       this.loadingAdditionalResults,
@@ -54,9 +53,8 @@ class RecentListLoaded extends RecentListState {
       this.params,
       this.sources});
 
-  RecentListLoaded copyWith({
+  NewsListLoaded copyWith({
     List<Articles>? posts,
-    Path? path,
     int? total,
     bool? hasReachedMax,
     bool? loadingAdditionalResults,
@@ -68,7 +66,7 @@ class RecentListLoaded extends RecentListState {
     String? params,
     String? sources,
   }) {
-    return RecentListLoaded(
+    return NewsListLoaded(
       posts: posts ?? this.posts,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       loadingAdditionalResults:

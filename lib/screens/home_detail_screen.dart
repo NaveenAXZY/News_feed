@@ -33,7 +33,7 @@ class HomeDetailScreen extends StatelessWidget {
               height: 15,
             ),
             Container(
-              height: 100,
+              height: 120,
               width: double.infinity,
               color: Colors.white,
               child: Column(
@@ -44,15 +44,16 @@ class HomeDetailScreen extends StatelessWidget {
                     child: Text(
                       'Title ',
                       style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontFamily: 'Montserrat-Bold',
+                          fontWeight: FontWeight.w500,
                           color: Color(0xFF0D0D0D)),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: Text('${modelResponse![index!].title!}'),
-                  ),
+                  Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(left: 20, top: 12),
+                      child: Text('${modelResponse![index!].title!}')),
                 ],
               ),
             ),
@@ -72,14 +73,15 @@ class HomeDetailScreen extends StatelessWidget {
                       'Description',
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontFamily: 'Montserrat-Bold',
+                          fontWeight: FontWeight.w500,
                           color: Color(0xFF0D0D0D)),
                     ),
                   ),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.only(left: 32, top: 12, right: 6),
+                    padding: EdgeInsets.only(left: 20, top: 12, right: 6),
                     child: Text(
                       '${modelResponse![index!].description}',
                       style: TextStyle(fontSize: 13, color: Color(0xFF59595A)),
@@ -106,8 +108,9 @@ class HomeDetailScreen extends StatelessWidget {
                         'Content',
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            fontFamily: 'Montserrat-Bold',
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF0D0D0D)),
                       ),
                       Text(
@@ -119,7 +122,7 @@ class HomeDetailScreen extends StatelessWidget {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 32, top: 12, right: 6),
+                  padding: EdgeInsets.only(left: 20, top: 12, right: 6),
                   child: Text(
                     '${modelResponse![index!].content}',
                     style: TextStyle(fontSize: 13, color: Color(0xFF59595A)),
@@ -135,7 +138,7 @@ class HomeDetailScreen extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Show more',
+                        'Explore',
                         style: TextStyle(fontSize: 13, color: Colors.blue),
                       ),
                     ),

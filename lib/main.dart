@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sudo_task/bloc/home_bloc/bloc.dart';
 import 'package:sudo_task/bloc/simple_bloc_delegate.dart';
-import 'package:sudo_task/screens/recent_videos_grid_category.dart';
+import 'package:sudo_task/screens/homescreen.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,24 +12,20 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-
+      home:  Scaffold(
+        body: Container(
+          child: BlocProvider<NewsListBloc>(
+            create: (BuildContext context) =>
+            NewsListBloc(params: "in", sources: 'COUNTRY')..add(Fetch()),
+            child: HomePage(),
           ),
-      home: RecentGridCategoryScreen('5'),
+        ),
+      ),
     );
   }
 }

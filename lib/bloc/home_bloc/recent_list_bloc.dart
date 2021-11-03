@@ -1,31 +1,27 @@
-import 'dart:io';
-
-import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sudo_task/bloc/Recent_videos/recent_list_event.dart';
-import 'package:sudo_task/bloc/Recent_videos/recent_list_state.dart';
-import 'package:sudo_task/bloc/news_event_listner.dart';
+import 'package:sudo_task/bloc/home_bloc/recent_list_event.dart';
+import 'package:sudo_task/bloc/home_bloc/recent_list_state.dart';
 import 'package:sudo_task/models/news_model.dart';
 import 'package:sudo_task/resources/repository.dart';
 
-class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
-  RecentListBloc({@required this.params, this.sources})
-      : super(RecentListUninitialized());
+class NewsListBloc extends Bloc<NewsListEvent, NewsListState> {
+  NewsListBloc({@required this.params, this.sources})
+      : super(NewsListUninitialized());
 
   String? params;
   String? sources;
 
   final Repository _repository = Repository();
 
-  RecentListState? get currentState => null;
+  NewsListState? get currentState => null;
 
   @override
-  Stream<Transition<RecentListEvent, RecentListState>> transformEvents(
-    Stream<RecentListEvent> events,
-    TransitionFunction<RecentListEvent, RecentListState> transitionFn,
+  Stream<Transition<NewsListEvent, NewsListState>> transformEvents(
+    Stream<NewsListEvent> events,
+    TransitionFunction<NewsListEvent, NewsListState> transitionFn,
   ) {
     return super.transformEvents(
       events.debounceTime(const Duration(milliseconds: 500)),
@@ -34,17 +30,17 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
   }
 
   @override
-  RecentListState get initialState => RecentListUninitialized();
+  NewsListState get initialState => NewsListUninitialized();
 
   @override
-  Stream<RecentListState> mapEventToState(RecentListEvent event) async* {
+  Stream<NewsListState> mapEventToState(NewsListEvent event) async* {
     final currentState = state;
     if (event is Query) {
-      yield RecentListUninitialized();
+      yield NewsListUninitialized();
     }
 
     if (event is RefreshFetch) {
-      yield RecentListUninitialized();
+      yield NewsListUninitialized();
     }
 
     if (event is Query ||
@@ -54,7 +50,7 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
         NewsModel posts;
         List<Articles>? currentDataList;
 
-        if (currentState is RecentListUninitialized) {
+        if (currentState is NewsListUninitialized) {
           int page = 1;
           int pageCount = 10;
           int startAt = 0;
@@ -63,9 +59,8 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
 
           posts = await _repository.fetchNewsApiModel(params, sources);
 
-          print('@@@@@@INSIDE${posts.error}');
           if (posts.error != null) {
-            yield RecentListError(
+            yield NewsListError(
               error: posts.error,
             );
           }
@@ -75,16 +70,10 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
 
           if (posts.articles!.length / pageCount > totalPages) {
             totalPages = totalPages + 1;
-            print('Pages$totalPages');
           }
 
-          print('@@@@@@INSIDE  Firstcondition1---CC$startAt----EE$endAt');
-
-          print(
-              '@@@@@@INSIDE  Firstcondition---CC${posts.articles!.getRange(startAt, endAt)}');
-
           currentDataList = posts.articles!.getRange(startAt, endAt).toList();
-          yield RecentListLoaded(
+          yield NewsListLoaded(
               posts: currentDataList,
               hasReachedMax: (posts.totalResults! > 10) ? false : true,
               loadingAdditionalResults: false,
@@ -97,17 +86,15 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
               sources: sources);
         }
 
-        if (currentState is RecentListLoaded) {
+        if (currentState is NewsListLoaded) {
           int? startAt;
           int? endAt;
 
-          yield (currentState as RecentListLoaded).copyWith(
+          yield (currentState as NewsListLoaded).copyWith(
             loadingAdditionalResults: true,
           );
-          print(
-              '@@@@@@INSIDE RecentListLoaded---PAGE--${currentState.page!}++++totalpages--${currentState.totalPages}');
           if (event is Query) {
-            (currentState as RecentListLoaded).posts!.clear();
+            (currentState as NewsListLoaded).posts!.clear();
 
             int page = 1;
             int pageCount = 10;
@@ -119,7 +106,7 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
                 await _repository.fetchNewsApiModel(event.params, event.source);
 
             if (posts.error != null) {
-              yield RecentListError(
+              yield NewsListError(
                 error: posts.error,
               );
             }
@@ -129,15 +116,14 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
 
             if (posts.articles!.length / pageCount > totalPages) {
               totalPages = totalPages + 1;
-              print('Pages$totalPages');
             }
 
             currentDataList = posts.articles!.getRange(startAt, endAt).toList();
 
-            yield (currentState as RecentListLoaded).copyWith(
+            yield (currentState as NewsListLoaded).copyWith(
               loadingAdditionalResults: false,
             );
-            yield RecentListLoaded(
+            yield NewsListLoaded(
                 posts: currentDataList,
                 hasReachedMax: (posts.totalResults! > 10) ? false : true,
                 loadingAdditionalResults: false,
@@ -159,23 +145,18 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
                 ? currentState.endAt! + currentState.pageCount!
                 : posts.articles!.length;
 
-            print('@@@@@@INSIDE  condition1---CC$startAt----EE$endAt');
-            print('@@@@@@INSIDE  condition2---CC${posts.articles!.length}');
-            print(
-                '@@@@@@INSIDE  condition3---CC${posts.articles!.getRange(startAt, endAt)}');
-
             currentDataList = posts.articles!.getRange(startAt, endAt).toList();
 
-            yield (currentState as RecentListLoaded).copyWith(
+            yield (currentState as NewsListLoaded).copyWith(
               loadingAdditionalResults: false,
             );
 
             yield currentDataList.isEmpty
-                ? (currentState as RecentListLoaded).copyWith(
+                ? (currentState as NewsListLoaded).copyWith(
                     hasReachedMax: true,
                   )
-                : RecentListLoaded(
-                    posts: (currentState as RecentListLoaded).posts! +
+                : NewsListLoaded(
+                    posts: (currentState as NewsListLoaded).posts! +
                         currentDataList,
                     hasReachedMax:
                         (currentDataList.length != 10) ? true : false,
@@ -188,20 +169,18 @@ class RecentListBloc extends Bloc<RecentListEvent, RecentListState> {
                     params: currentState.params,
                     sources: currentState.sources);
           } else {
-            print('@@@@@@@INSIDE else');
-            yield (currentState as RecentListLoaded).copyWith(
+            yield (currentState as NewsListLoaded).copyWith(
               hasReachedMax: true,
               loadingAdditionalResults: false,
             );
           }
         }
       } catch (error) {
-        print('@@@@@@@INSIDE RecentListError${error}');
-        yield RecentListError();
+        yield NewsListError();
       }
     }
   }
 
-  bool _hasReachedMax(RecentListState state) =>
-      state is RecentListLoaded && state.hasReachedMax!;
+  bool _hasReachedMax(NewsListState state) =>
+      state is NewsListLoaded && state.hasReachedMax!;
 }

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-abstract class RecentListEvent extends Equatable {}
+abstract class NewsListEvent extends Equatable {}
 
-class Fetch extends RecentListEvent {
+class Fetch extends NewsListEvent {
   @override
   String toString() => 'Fetch';
 
@@ -11,7 +11,7 @@ class Fetch extends RecentListEvent {
   List<Object> get props => throw UnimplementedError();
 }
 
-class Query extends RecentListEvent {
+class Query extends NewsListEvent {
   Query({this.params, this.source});
   final String? params;
   final String? source;
@@ -24,7 +24,7 @@ class Query extends RecentListEvent {
   List<Object> get props => throw UnimplementedError();
 }
 
-class RefreshFetch extends RecentListEvent {
+class RefreshFetch extends NewsListEvent {
   @override
   String toString() => 'RefreshFetch';
 

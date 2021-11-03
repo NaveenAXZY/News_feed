@@ -1,52 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sudo_task/bloc/Recent_videos/recent_list_bloc.dart';
-import 'package:sudo_task/bloc/Recent_videos/recent_list_event.dart';
-import 'package:sudo_task/bloc/Recent_videos/recent_list_state.dart';
+import 'package:sudo_task/bloc/home_bloc/recent_list_bloc.dart';
+import 'package:sudo_task/bloc/home_bloc/recent_list_event.dart';
+import 'package:sudo_task/bloc/home_bloc/recent_list_state.dart';
 import 'package:sudo_task/resources/api_provider_home.dart';
-import 'package:sudo_task/widgets/recent_videos_grid/block.dart';
+import 'package:sudo_task/widgets/home_screen_list/block.dart';
+import 'package:sudo_task/widgets/home_screen_list/country_list_block.dart';
+import 'package:sudo_task/widgets/home_screen_list/language_list_block.dart';
 
-class RecentGridCategoryScreen extends StatefulWidget {
-  RecentGridCategoryScreen(this.languageId, {Key? key}) : super(key: key);
-
-  String languageId;
-
-  @override
-  _RecentGridCategoryScreenState createState() =>
-      _RecentGridCategoryScreenState(languageId);
-}
-
-class _RecentGridCategoryScreenState extends State<RecentGridCategoryScreen> {
-  _RecentGridCategoryScreenState(this.languageId);
-
-  String languageId;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: BlocProvider<RecentListBloc>(
-          create: (BuildContext context) =>
-              RecentListBloc(params: "in", sources: 'COUNTRY')..add(Fetch()),
-          child: HomePage(),
-        ),
-      ),
-    );
-  }
-}
+List<BoxShadow> shadowList = [
+  BoxShadow(color: Colors.grey[300]!, blurRadius: 30, offset: Offset(0, 10))
+];
 
 class HomePage extends StatefulWidget {
   @override
@@ -59,11 +28,10 @@ class _HomePageState extends State<HomePage> {
   double? _scrollThreshold = 170.0;
   bool? loadingAdditionalResults;
   int? total;
-  RecentListBloc? _postBloc;
-  int pageCount = 1;
-  bool isLoading = false;
-  TextEditingController _emailController = TextEditingController();
+  NewsListBloc? _postBloc;
+  TextEditingController _searchController = TextEditingController();
   String greetings = '';
+  int? randomColors;
 
   var countryCode = [
     {"language": "Arabic", "code": "ar"},
@@ -76,6 +44,17 @@ class _HomePageState extends State<HomePage> {
     {"language": "Norwegian", "code": "no"},
     {"language": "Russian", "code": "ru"},
     {"language": "Northern Sami", "code": "se"},
+  ];
+
+  List<Color> colorsList = [
+    Colors.lightGreen.shade100,
+    Colors.brown.shade100,
+    Colors.deepPurpleAccent.shade100,
+    Colors.orange.shade100,
+    Colors.redAccent.shade100,
+    Colors.teal.shade100,
+    Colors.indigo.shade100,
+    Colors.purple.shade100,
   ];
 
   var countryList = [
@@ -245,7 +224,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _postBloc = BlocProvider.of<RecentListBloc>(context);
+    _postBloc = BlocProvider.of<NewsListBloc>(context);
     loadingAdditionalResults = false;
     total = 0;
     greeting().then((value) {
@@ -316,48 +295,10 @@ class _HomePageState extends State<HomePage> {
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2),
                             itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  _postBloc!.add(Query(
-                                      params: countryList[index]['code'],
-                                      source: 'COUNTRY'));
-                                  Navigator.pop(context);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    elevation: 2,
-                                    child: Column(
-                                      children: [
-                                        ClipRRect(
-                                          child: SvgPicture.network(
-                                            '${countryList[index]['image']}',
-                                            fit: BoxFit.fill,
-                                            height: 130,
-                                            width: double.infinity,
-                                            placeholderBuilder: (BuildContext
-                                                    context) =>
-                                                Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            30.0),
-                                                    child:
-                                                        const CircularProgressIndicator()),
-                                          ),
-                                          borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(8),
-                                              topLeft: Radius.circular(8)),
-                                        ),
-                                        SizedBox(height: 18),
-                                        Text('${countryList[index]['country']}')
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return CountryListBlock(
+                                  postBloc: _postBloc,
+                                  countryList: countryList,
+                                  index: index);
                             },
                           ),
                         ),
@@ -424,28 +365,14 @@ class _HomePageState extends State<HomePage> {
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     childAspectRatio: 2, crossAxisCount: 3),
                             itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  print('');
-                                  _postBloc!.add(Query(
-                                      params: countryList[index]['code'],
-                                      source: 'LANGUAGE'));
-                                  Navigator.pop(context);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    elevation: 2,
-                                    child: Center(
-                                      child: Text(
-                                          '${countryCode[index]['language']}'),
-                                    ),
-                                  ),
-                                ),
-                              );
+                              randomColors =
+                                  Random().nextInt(colorsList.length);
+                              return LanguageListBlock(
+                                  postBloc: _postBloc,
+                                  countryCode: countryCode,
+                                  colorsList: colorsList,
+                                  randomColors: randomColors,
+                                  index: index);
                             },
                           ),
                         ),
@@ -480,7 +407,11 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('$greetings'),
+                    Text(
+                      '$greetings',
+                      style: TextStyle(
+                          fontFamily: 'quicksand_semibold', fontSize: 18),
+                    ),
                     Row(
                       children: [
                         IconButton(
@@ -515,26 +446,30 @@ class _HomePageState extends State<HomePage> {
                     width: MediaQuery.of(context).size.width / 1.25,
                     height: 40,
                     color: const Color(0xffD8D9D9),
-                    padding: const EdgeInsets.only(left: 5, top: 20),
+                    padding: const EdgeInsets.only(left: 8),
                     child: TextFormField(
                       style: TextStyle(
                           color: Colors.black, fontFamily: 'montserrat_Medium'),
-                      controller: _emailController,
+                      controller: _searchController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.only(top: 5),
                         border: OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: 'Search for articles',
+                        hintText: 'Search for articles...',
                         hintStyle: TextStyle(
-                            fontFamily: 'montserrat_Medium',
+                            fontFamily: 'gotham_medium',
+                            letterSpacing: 1.5,
+                            fontSize: 12,
                             color: Colors.grey),
                       ),
                     ),
                   ),
                   IconButton(
                       onPressed: () {
-                        if (_emailController.text.isNotEmpty) {
+                        if (_searchController.text.isNotEmpty) {
                           _postBloc!.add(Query(
-                              params: _emailController.text, source: 'SEARCH'));
+                              params: _searchController.text,
+                              source: 'SEARCH'));
                         }
                       },
                       icon: Icon(
@@ -552,45 +487,72 @@ class _HomePageState extends State<HomePage> {
           slivers: <Widget>[
             SliverToBoxAdapter(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Container(
-                    padding: const EdgeInsets.only(top: 15, bottom: 5),
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.only(top: 25, bottom: 15, left: 12),
                     child: Text(
                       'News Feed',
                       style: TextStyle(
-                        fontSize: 18.0,
+                        fontSize: 20.0,
                         fontFamily: 'Montserrat-Bold',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            BlocBuilder<RecentListBloc, RecentListState>(
+            BlocBuilder<NewsListBloc, NewsListState>(
                 bloc: _postBloc,
                 //child: BlocBuilder<ProductListBloc, ProductListState>(
-                builder: (BuildContext context, RecentListState state) {
+                builder: (BuildContext context, NewsListState state) {
                   final Size size = MediaQuery.of(context).size;
                   final double itemWidth = size.width / 2 - 8;
                   final double itemHeight = itemWidth * (3 / 2) + 90;
 
-                  if (state is RecentListError) {
+                  if (state is NewsListError) {
                     if (state.error != null) {
                       return SliverToBoxAdapter(
-                        child: Center(child: Text('${state.error}')),
+                        child: Center(
+                            child: Text(
+                          '${state.error}',
+                          style: TextStyle(
+                              fontSize: 16,
+                              letterSpacing: 1,
+                              color: Colors.red.shade200,
+                              fontFamily: 'quicksand_regular'),
+                        )),
                       );
                     }
                     return SliverToBoxAdapter(
-                      child: Center(child: Text('failed to fetch posts')),
+                      child: Center(
+                          child: Text(
+                        'failed to fetch posts',
+                        style: TextStyle(
+                            fontSize: 16,
+                            letterSpacing: 1,
+                            color: Colors.red.shade200,
+                            fontFamily: 'quicksand_regular'),
+                      )),
                     );
                   }
 
-                  if (state is RecentListLoaded) {
+                  if (state is NewsListLoaded) {
                     if (state.posts!.isEmpty) {
-                      return const SliverToBoxAdapter(
-                        child: Center(child: Text('no posts')),
+                      return SliverToBoxAdapter(
+                        child: Center(
+                            child: Text(
+                          'Loading...',
+                          style: TextStyle(
+                              fontSize: 16,
+                              letterSpacing: 1,
+                              color: Colors.red.shade200,
+                              fontFamily: 'quicksand_regular'),
+                        )),
                       );
                     }
 
@@ -614,13 +576,13 @@ class _HomePageState extends State<HomePage> {
                         crossAxisCount: 1,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        childAspectRatio: 1.4,
+                        childAspectRatio: 1.35,
                       ),
                       delegate:
                           SliverChildBuilderDelegate((BuildContext c, int i) {
                         return i >= state.posts!.length
                             ? const Text('')
-                            : RecentVideosGridCategoryblock(
+                            : HomescreenBlock(
                                 index: i,
                                 modelResponse: state.posts,
                               );
@@ -628,11 +590,13 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                   return SliverToBoxAdapter(
-                    child: Container(
+                      child: Container(
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    width: double.infinity,
+                    child: Center(
                       child: CircularProgressIndicator(),
-                      height: size.height,
                     ),
-                  );
+                  ));
                 }),
             loadingAdditionalResults!
                 ? SliverToBoxAdapter(

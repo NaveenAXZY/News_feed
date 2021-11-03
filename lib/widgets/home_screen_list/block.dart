@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:sudo_task/models/news_model.dart';
 import 'package:sudo_task/screens/home_detail_screen.dart';
 
-class RecentVideosGridCategoryblock extends StatelessWidget {
-  RecentVideosGridCategoryblock({this.index, this.modelResponse});
+class HomescreenBlock extends StatelessWidget {
+  HomescreenBlock({this.index, this.modelResponse});
 
   List<Articles>? modelResponse;
   int? index;
@@ -15,7 +17,7 @@ class RecentVideosGridCategoryblock extends StatelessWidget {
     var str = "${modelResponse![index!].publishedAt}";
     var parts = str.split('T');
     var prefix = parts[0].trim();
-    var sufix = parts[1].trim();
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -42,8 +44,11 @@ class RecentVideosGridCategoryblock extends StatelessWidget {
                     fit: BoxFit.cover,
                     height: 200,
                     width: double.infinity,
-                    placeholder: (BuildContext context, String url) =>
-                        CircularProgressIndicator(),
+                    placeholder: (BuildContext context, String url) => Center(
+                      child: SpinKitRipple(
+                        color: Colors.green,
+                      ),
+                    ),
                     errorWidget:
                         (BuildContext context, String url, dynamic error) =>
                             const Icon(Icons.error),
@@ -57,16 +62,17 @@ class RecentVideosGridCategoryblock extends StatelessWidget {
                   padding: EdgeInsets.only(left: 12),
                   child: Text(
                     modelResponse![index!].title!,
-                    maxLines: 1,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12, top: 15),
+                  padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('$prefix'),
-                      Text('${sufix.replaceAll('Z', '')}')
+                      Text('${DateFormat.jm().format(DateTime.parse(str))}')
                     ],
                   ),
                 )
