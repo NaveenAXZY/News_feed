@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sudo_task/models/news_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,6 +22,7 @@ class HomeDetailScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             CachedNetworkImage(
               height: 230,
