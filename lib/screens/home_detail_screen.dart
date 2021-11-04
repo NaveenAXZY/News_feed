@@ -14,10 +14,11 @@ class HomeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Event Details'),
+        backgroundColor: Color(0xFF0A6093),
+        title: Text('News details'),
+        centerTitle: true,
         automaticallyImplyLeading: true,
       ),
-      backgroundColor: Colors.red.shade50,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -25,7 +26,9 @@ class HomeDetailScreen extends StatelessWidget {
               height: 230,
               width: double.infinity,
               fit: BoxFit.cover,
-              imageUrl: "${modelResponse![index!].urlToImage}",
+              imageUrl: modelResponse![index!].urlToImage == null
+                  ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                  : modelResponse![index!].urlToImage!,
               placeholder: (context, url) => new CircularProgressIndicator(),
               errorWidget: (context, url, error) => new Icon(Icons.error),
             ),
@@ -53,7 +56,17 @@ class HomeDetailScreen extends StatelessWidget {
                   Container(
                       width: double.infinity,
                       padding: EdgeInsets.only(left: 20, top: 12),
-                      child: Text('${modelResponse![index!].title!}')),
+                      child: modelResponse![index!].title! != null
+                          ? Text('${modelResponse![index!].title!}',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'montserrat_medium',
+                                  color: Color(0xFF59595A)))
+                          : Text('No data available',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'montserrat_medium',
+                                  color: Color(0xFF59595A)))),
                 ],
               ),
             ),
@@ -61,7 +74,7 @@ class HomeDetailScreen extends StatelessWidget {
               height: 15,
             ),
             Container(
-              height: 150,
+              height: 170,
               width: double.infinity,
               color: Colors.white,
               child: Column(
@@ -82,11 +95,25 @@ class HomeDetailScreen extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.only(left: 20, top: 12, right: 6),
-                    child: Text(
+                    child:
+                        /*Text(
                       '${modelResponse![index!].description}',
                       style: TextStyle(fontSize: 13, color: Color(0xFF59595A)),
-                    ),
-                  ),
+                    ),*/
+                        modelResponse![index!].description == null
+                            ? Text('No data available',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color(0xFF59595A),
+                                  fontFamily: 'montserrat_medium',
+                                ))
+                            : Text('${modelResponse![index!].description!}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Color(0xFF59595A),
+                                  fontFamily: 'montserrat_medium',
+                                )),
+                  )
                 ],
               ),
             ),
@@ -121,13 +148,29 @@ class HomeDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(left: 20, top: 12, right: 6),
-                  child: Text(
+                    width: double.infinity,
+                    padding: EdgeInsets.only(left: 20, top: 12, right: 6),
+                    child: modelResponse![index!].content == null
+                        ? Text(
+                            'No data found',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF59595A),
+                              fontFamily: 'montserrat_medium',
+                            ),
+                          )
+                        : Text(
+                            '${modelResponse![index!].content}',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF59595A),
+                              fontFamily: 'montserrat_medium',
+                            ),
+                          ) /*Text(
                     '${modelResponse![index!].content}',
                     style: TextStyle(fontSize: 13, color: Color(0xFF59595A)),
-                  ),
-                ),
+                  ),*/
+                    ),
                 GestureDetector(
                   onTap: () {
                     _launchUrl(modelResponse![index!].url!);
@@ -139,7 +182,10 @@ class HomeDetailScreen extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Explore',
-                        style: TextStyle(fontSize: 13, color: Colors.blue),
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontFamily: 'montserrat_medium',
+                            color: Colors.blue),
                       ),
                     ),
                   ),

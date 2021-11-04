@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,19 +5,19 @@ import 'package:sudo_task/bloc/home_bloc/recent_list_bloc.dart';
 import 'package:sudo_task/bloc/home_bloc/recent_list_event.dart';
 
 class CountryListBlock extends StatelessWidget {
-   CountryListBlock({Key? key,this.postBloc,this.countryList,this.index}) : super(key: key);
+  CountryListBlock({Key? key, this.postBloc, this.countryList, this.index})
+      : super(key: key);
 
-   NewsListBloc? postBloc;
-   var countryList;
-   int? index;
+  NewsListBloc? postBloc;
+  var countryList;
+  int? index;
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        postBloc!.add(Query(
-            params: countryList[index]['code'],
-            source: 'COUNTRY'));
+        postBloc!
+            .add(Query(params: countryList[index]['code'], source: 'COUNTRY'));
         Navigator.pop(context);
       },
       child: Padding(
@@ -37,20 +35,20 @@ class CountryListBlock extends StatelessWidget {
                   fit: BoxFit.fill,
                   height: 130,
                   width: double.infinity,
-                  placeholderBuilder:
-                      (BuildContext context) =>
-                      Center(
-                        child: SpinKitRipple(
-                          color: Colors.green,
-                        ),
-                      ),
+                  placeholderBuilder: (BuildContext context) => Center(
+                    child: SpinKitRipple(
+                      color: Color(0xFF0A6093),
+                    ),
+                  ),
                 ),
                 borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    topLeft: Radius.circular(8)),
+                    topRight: Radius.circular(8), topLeft: Radius.circular(8)),
               ),
               SizedBox(height: 18),
-              Text('${countryList[index]['country']}')
+              Text(
+                '${countryList[index]['country']}',
+                style: TextStyle(fontFamily: 'montserrat_medium', fontSize: 16),
+              )
             ],
           ),
         ),

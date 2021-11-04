@@ -3,8 +3,14 @@ import 'package:sudo_task/bloc/home_bloc/recent_list_bloc.dart';
 import 'package:sudo_task/bloc/home_bloc/recent_list_event.dart';
 
 class LanguageListBlock extends StatelessWidget {
-  LanguageListBlock({Key? key,this.postBloc,this.countryCode,this.colorsList,this.randomColors,this.index}) : super(key: key);
-
+  LanguageListBlock(
+      {Key? key,
+      this.postBloc,
+      this.countryCode,
+      this.colorsList,
+      this.randomColors,
+      this.index})
+      : super(key: key);
 
   NewsListBloc? postBloc;
   var countryCode;
@@ -17,9 +23,8 @@ class LanguageListBlock extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         print('');
-        postBloc!.add(Query(
-            params: countryCode[index]['code'],
-            source: 'LANGUAGE'));
+        postBloc!
+            .add(Query(params: countryCode[index]['code'], source: 'LANGUAGE'));
         Navigator.pop(context);
       },
       child: Padding(
@@ -32,11 +37,12 @@ class LanguageListBlock extends StatelessWidget {
           elevation: 2,
           child: Center(
             child: Text(
-                '${countryCode[index]['language']}'),
+              '${countryCode[index]['language']}',
+              style: TextStyle(fontFamily: 'montserrat_medium', fontSize: 16),
+            ),
           ),
         ),
       ),
     );
   }
-
 }

@@ -283,7 +283,12 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             width: double.infinity,
-                            child: Center(child: Text('Choose your Country')),
+                            child: Center(
+                                child: Text(
+                              'Choose your Country',
+                              style: TextStyle(
+                                  fontFamily: 'montserrat_bold', fontSize: 18),
+                            )),
                           ),
                         ),
                         Expanded(
@@ -353,7 +358,11 @@ class _HomePageState extends State<HomePage> {
                           child: Container(
                             width: double.infinity,
                             child: Center(
-                                child: Text('Choose your Preferred Language')),
+                                child: Text(
+                              'Choose your Preferred Language',
+                              style: TextStyle(
+                                  fontFamily: 'montserrat_bold', fontSize: 18),
+                            )),
                           ),
                         ),
                         Expanded(
@@ -396,7 +405,7 @@ class _HomePageState extends State<HomePage> {
           height: 150,
           width: double.infinity,
           decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF0A6093),
               borderRadius: BorderRadius.only(
                   bottomRight: Radius.circular(30),
                   bottomLeft: Radius.circular(30))),
@@ -410,7 +419,9 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       '$greetings',
                       style: TextStyle(
-                          fontFamily: 'quicksand_semibold', fontSize: 18),
+                          fontFamily: 'quicksand_semibold',
+                          fontSize: 18,
+                          color: Colors.white),
                     ),
                     Row(
                       children: [
@@ -419,21 +430,20 @@ class _HomePageState extends State<HomePage> {
                               _showBottomSheetForCountry(context);
                             },
                             icon: Image.asset(
-                              'assets/images/country-removebg-preview.png',
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.fill,
-                            )),
+                                'assets/images/country-removebg-preview.png',
+                                height: 25,
+                                width: 25,
+                                fit: BoxFit.fill,
+                                color: Colors.white70)),
                         IconButton(
                             onPressed: () {
                               _showBottomSheetForLanguage(context);
                             },
-                            icon: Image.asset(
-                              'assets/images/lang.png',
-                              height: 28,
-                              width: 28,
-                              fit: BoxFit.fill,
-                            ))
+                            icon: Image.asset('assets/images/lang.png',
+                                height: 28,
+                                width: 28,
+                                fit: BoxFit.fill,
+                                color: Colors.white70))
                       ],
                     ),
                   ],
@@ -466,16 +476,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                   IconButton(
                       onPressed: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
                         if (_searchController.text.isNotEmpty) {
                           _postBloc!.add(Query(
                               params: _searchController.text,
                               source: 'SEARCH'));
                         }
                       },
-                      icon: Icon(
-                        Icons.search_outlined,
-                        size: 30,
-                      ))
+                      icon: Icon(Icons.search_outlined,
+                          size: 30, color: Colors.white70))
                 ],
               ),
             ],
@@ -576,7 +585,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisCount: 1,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        childAspectRatio: 1.35,
+                        childAspectRatio: 1.2,
                       ),
                       delegate:
                           SliverChildBuilderDelegate((BuildContext c, int i) {

@@ -46,7 +46,7 @@ class HomescreenBlock extends StatelessWidget {
                     width: double.infinity,
                     placeholder: (BuildContext context, String url) => Center(
                       child: SpinKitRipple(
-                        color: Colors.green,
+                        color: Color(0xFF0A6093),
                       ),
                     ),
                     errorWidget:
@@ -59,20 +59,34 @@ class HomescreenBlock extends StatelessWidget {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 12),
+                  padding: EdgeInsets.only(left: 12, right: 12),
                   child: Text(
                     modelResponse![index!].title!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 16, fontFamily: 'montserrat_medium'),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
+                  padding: const EdgeInsets.only(left: 12, right: 12, top: 22),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('$prefix'),
-                      Text('${DateFormat.jm().format(DateTime.parse(str))}')
+                      Text(
+                        '$prefix',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'gotham_medium',
+                            color: Color(0xFF0A6093)),
+                      ),
+                      Text(
+                        '${DateFormat.jm().format(DateTime.parse(str))}',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'gotham_bold',
+                            color: Color(0xFF0A6093)),
+                      )
                     ],
                   ),
                 )
