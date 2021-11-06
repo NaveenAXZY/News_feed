@@ -48,7 +48,7 @@ class CountryListBlock extends StatelessWidget {
               Text(
                 '${countryList[index]['country']}',
                 style: TextStyle(fontFamily: 'montserrat_medium', fontSize: 16),
-              )
+              ),
             ],
           ),
         ),
